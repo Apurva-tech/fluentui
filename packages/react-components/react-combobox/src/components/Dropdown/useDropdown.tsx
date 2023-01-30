@@ -3,12 +3,13 @@ import { ChevronDownRegular as ChevronDownIcon } from '@fluentui/react-icons';
 import { getPartitionedNativeProps, mergeCallbacks, resolveShorthand, useTimeout } from '@fluentui/react-utilities';
 import { getDropdownActionFromKey } from '../../utils/dropdownKeyActions';
 import { useComboboxBaseState } from '../../utils/useComboboxBaseState';
-import { useTriggerListboxSlots } from '../../utils/useTriggerListboxSlots';
 import { useComboboxPopup } from '../../utils/useComboboxPopup';
+import { useTriggerListboxSlots } from '../../utils/useTriggerListboxSlots';
 import { Listbox } from '../Listbox/Listbox';
 import type { Slot } from '@fluentui/react-utilities';
 import type { OptionValue } from '../../utils/OptionCollection.types';
 import type { DropdownProps, DropdownState } from './Dropdown.types';
+import { useMergedRefs } from '@fluentui/react-utilities';
 
 /**
  * Create the state required to render Dropdown.
@@ -21,13 +22,29 @@ import type { DropdownProps, DropdownState } from './Dropdown.types';
  */
 export const useDropdown_unstable = (props: DropdownProps, ref: React.Ref<HTMLButtonElement>): DropdownState => {
   const baseState = useComboboxBaseState(props);
-  const { activeOption, getIndexOfId, getOptionsMatchingValue, open, setActiveOption, setOpen } = baseState;
+  const {
+    activeOption,
+    getIndexOfId,
+    getOptionsMatchingText,
+    open,
+    setActiveOption,
+    setFocusVisible,
+    setOpen,
+  } = baseState;
 
   const { primary: triggerNativeProps, root: rootNativeProps } = getPartitionedNativeProps({
     props,
     primarySlotTagName: 'button',
     excludedPropNames: ['children'],
   });
+
+  // set listbox popup width based off the root/trigger width
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const [popupWidth, setPopupWidth] = React.useState<string>();
+  React.useEffect(() => {
+    const width = open ? `${rootRef.current?.clientWidth}px` : undefined;
+    setPopupWidth(width);
+  }, [open]);
 
   // jump to matching option based on typing
   const searchString = React.useRef('');
@@ -36,7 +53,7 @@ export const useDropdown_unstable = (props: DropdownProps, ref: React.Ref<HTMLBu
   const getNextMatchingOption = (): OptionValue | undefined => {
     // first check for matches for the full searchString
     let matcher = (optionValue: string) => optionValue.toLowerCase().indexOf(searchString.current) === 0;
-    let matches = getOptionsMatchingValue(matcher);
+    let matches = getOptionsMatchingText(matcher);
     let startIndex = activeOption ? getIndexOfId(activeOption.id) : 0;
 
     // if the dropdown is already open and the searchstring is a single character,
@@ -55,7 +72,7 @@ export const useDropdown_unstable = (props: DropdownProps, ref: React.Ref<HTMLBu
       if (allSameLetter) {
         startIndex++;
         matcher = (optionValue: string) => optionValue.toLowerCase().indexOf(letters[0]) === 0;
-        matches = getOptionsMatchingValue(matcher);
+        matches = getOptionsMatchingText(matcher);
       }
     }
 
@@ -86,6 +103,7 @@ export const useDropdown_unstable = (props: DropdownProps, ref: React.Ref<HTMLBu
 
       const nextOption = getNextMatchingOption();
       setActiveOption(nextOption);
+      setFocusVisible(true);
     }
   };
 
@@ -108,7 +126,10 @@ export const useDropdown_unstable = (props: DropdownProps, ref: React.Ref<HTMLBu
     baseState.open || baseState.hasFocus
       ? resolveShorthand(props.listbox, {
           required: true,
-          defaultProps: { children: props.children },
+          defaultProps: {
+            children: props.children,
+            style: { width: popupWidth },
+          },
         })
       : undefined;
 
@@ -125,6 +146,7 @@ export const useDropdown_unstable = (props: DropdownProps, ref: React.Ref<HTMLBu
     root: resolveShorthand(props.root, {
       required: true,
       defaultProps: {
+        'aria-owns': !props.inlinePopup ? listboxSlot?.id : undefined,
         children: props.children,
         ...rootNativeProps,
       },
@@ -140,6 +162,8 @@ export const useDropdown_unstable = (props: DropdownProps, ref: React.Ref<HTMLBu
     placeholderVisible: !baseState.value && !!props.placeholder,
     ...baseState,
   };
+
+  state.root.ref = useMergedRefs(state.root.ref, rootRef);
 
   return state;
 };

@@ -2,7 +2,11 @@
 
 exports[`PeoplePicker renders correctly 1`] = `
 <div
-  className="ms-BasePicker"
+  className=
+      ms-BasePicker
+      {
+        position: relative;
+      }
   onBlur={[Function]}
   onClick={[Function]}
   onFocus={[Function]}
@@ -96,6 +100,9 @@ exports[`PeoplePicker renders correctly 1`] = `
             &::-ms-clear {
               display: none;
             }
+            &:placeholder-shown {
+              text-overflow: ellipsis;
+            }
             &::placeholder {
               -moz-osx-font-smoothing: grayscale;
               -webkit-font-smoothing: antialiased;
@@ -159,7 +166,11 @@ exports[`PeoplePicker renders correctly 1`] = `
 
 exports[`PeoplePicker renders correctly with preselected items 1`] = `
 <div
-  className="ms-BasePicker"
+  className=
+      ms-BasePicker
+      {
+        position: relative;
+      }
   onBlur={[Function]}
   onClick={[Function]}
   onFocus={[Function]}
@@ -392,7 +403,7 @@ exports[`PeoplePicker renders correctly with preselected items 1`] = `
                           }
                       onError={[Function]}
                       onLoad={[Function]}
-                      src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-react-assets/persona-female.png"
+                      src="https://res-1.cdn.office.net/files/fabric-cdn-prod_20221209.001/office-ui-fabric-react-assets/persona-female.png"
                     />
                   </div>
                   <div
@@ -798,6 +809,9 @@ exports[`PeoplePicker renders correctly with preselected items 1`] = `
             }
             &::-ms-clear {
               display: none;
+            }
+            &:placeholder-shown {
+              text-overflow: ellipsis;
             }
             &::placeholder {
               -moz-osx-font-smoothing: grayscale;

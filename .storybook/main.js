@@ -1,9 +1,10 @@
 const path = require('path');
 const fs = require('fs');
-const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const exportToCodesandboxAddon = require('storybook-addon-export-to-codesandbox');
 
-const { loadWorkspaceAddon, getCodesandboxBabelOptions } = require('../scripts/storybook');
+const { loadWorkspaceAddon, getCodesandboxBabelOptions, registerTsPaths } = require('@fluentui/scripts-storybook');
+
+const tsConfigPath = path.resolve(__dirname, '../tsconfig.base.json');
 
 /**
  * @typedef {import('@storybook/core-common').StorybookConfig} StorybookBaseConfig
@@ -38,6 +39,7 @@ module.exports = /** @type {Omit<StorybookConfig,'typescript'|'babel'>} */ ({
   addons: [
     '@storybook/addon-essentials',
     '@storybook/addon-a11y',
+    '@storybook/addon-links',
     '@storybook/addon-knobs/preset',
     'storybook-addon-performance',
 
@@ -49,16 +51,10 @@ module.exports = /** @type {Omit<StorybookConfig,'typescript'|'babel'>} */ ({
     // internal monorepo custom addons
 
     /**  @see ../packages/react-components/react-storybook-addon */
-    loadWorkspaceAddon('@fluentui/react-storybook-addon'),
+    loadWorkspaceAddon('@fluentui/react-storybook-addon', { tsConfigPath }),
   ],
   webpackFinal: config => {
-    const tsPaths = new TsconfigPathsPlugin({
-      configFile: path.resolve(__dirname, '../tsconfig.base.json'),
-    });
-
-    if (config.resolve) {
-      config.resolve.plugins ? config.resolve.plugins.push(tsPaths) : (config.resolve.plugins = [tsPaths]);
-    }
+    registerTsPaths({ config, tsConfigPath });
 
     if (config.module && config.module.rules) {
       /**
@@ -71,7 +67,7 @@ module.exports = /** @type {Omit<StorybookConfig,'typescript'|'babel'>} */ ({
          */
         enforce: 'post',
         test: /\.stories\.tsx$/,
-        include: /src/,
+        include: /stories/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
@@ -96,6 +92,7 @@ module.exports = /** @type {Omit<StorybookConfig,'typescript'|'babel'>} */ ({
   core: {
     builder: 'webpack5',
     lazyCompilation: true,
+    disableTelemetry: true,
   },
   /**
    * Programmatically enhance previewHead as inheriting just static file `preview-head.html` doesn't work in monorepo

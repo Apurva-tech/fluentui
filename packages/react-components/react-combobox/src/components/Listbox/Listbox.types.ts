@@ -18,9 +18,13 @@ export type ListboxProps = ComponentProps<ListboxSlots> & SelectionProps;
  */
 export type ListboxState = ComponentState<ListboxSlots> &
   OptionCollectionState &
+  Pick<SelectionProps, 'multiselect'> &
   SelectionState & {
     /* Option data for the currently highlighted option (not the selected option) */
     activeOption?: OptionValue;
+
+    // Whether the keyboard focus outline style should be visible
+    focusVisible: boolean;
 
     selectOption(event: SelectionEvents, option: OptionValue): void;
 

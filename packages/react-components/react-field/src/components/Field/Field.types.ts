@@ -1,34 +1,20 @@
 import * as React from 'react';
 import { Label } from '@fluentui/react-label';
-import type { ComponentProps, ComponentState, Slot, SlotClassNames } from '@fluentui/react-utilities';
-import type { SlotComponent } from './SlotComponent.types';
+import type { ComponentProps, ComponentState, Slot } from '@fluentui/react-utilities';
 
 /**
- * The minimum requirement for a component used by Field.
- *
- * Note: the use of VoidFunctionComponent means that component is not *required* to have a children prop,
- * but it is still allowed to have a children prop.
+ * The props added to the Field's child element.
  */
-export type FieldComponent = React.VoidFunctionComponent<
-  Pick<
-    React.HTMLAttributes<HTMLElement>,
-    'id' | 'className' | 'style' | 'aria-labelledby' | 'aria-describedby' | 'aria-invalid' | 'aria-errormessage'
-  >
+export type FieldChildProps = Pick<
+  React.HTMLAttributes<HTMLElement>,
+  'id' | 'aria-labelledby' | 'aria-describedby' | 'aria-invalid' | 'aria-required'
 >;
 
 /**
- * Slots added by Field
+ * Slots of the Field component
  */
-export type FieldSlots<T extends FieldComponent> = {
+export type FieldSlots = {
   root: NonNullable<Slot<'div'>>;
-
-  /**
-   * The underlying component wrapped by this field.
-   *
-   * This is the PRIMARY slot: all intrinsic HTML properties will be applied to this slot,
-   * except `className` and `style`, which remain on the root slot.
-   */
-  control: SlotComponent<T>;
 
   /**
    * The label associated with the field.
@@ -36,28 +22,44 @@ export type FieldSlots<T extends FieldComponent> = {
   label?: Slot<typeof Label>;
 
   /**
-   * A message about the validation state. The appearance of the `validationMessage` depends on `validationState`.
+   * A message about the validation state. By default, this is an error message, but it can be a success, warning,
+   * or custom message by setting `validationState`.
    */
-  validationMessage?: Slot<'span'>;
+  validationMessage?: Slot<'div'>;
 
   /**
-   * The icon associated with the `validationMessage`. If the `validationState` prop is set, this will default to an
-   * icon corresponding to that state.
+   * The icon associated with the `validationMessage`. This will only be displayed if `validationMessage` is set.
    *
-   * This will only be displayed if `validationMessage` is set.
+   * The default depends on `validationState`:
+   * * `error` - `<ErrorCircle12Filled />`
+   * * `warning` - `<Warning12Filled />`
+   * * `success` - `<CheckmarkCircle12Filled />`
+   * * `none` - `null`
    */
   validationMessageIcon?: Slot<'span'>;
 
   /**
    * Additional hint text below the field.
    */
-  hint?: Slot<'span'>;
+  hint?: Slot<'div'>;
 };
 
 /**
  * Field Props
  */
-export type FieldProps<T extends FieldComponent> = ComponentProps<Partial<FieldSlots<T>>, 'control'> & {
+export type FieldProps = Omit<ComponentProps<FieldSlots>, 'children'> & {
+  /**
+   * The Field's child can be a single form control, or a render function that takes the props that should be spread on
+   * a form control.
+   *
+   * All form controls in this library can be used directly as children (such as `<Input>` or `<RadioGroup>`), as well
+   * as intrinsic form controls like `<input>` or `<textarea>`. Custom controls can also be used as long as they
+   * accept FieldChildProps and spread them on the appropriate element.
+   *
+   * For more complex scenarios, a render function can be used to pass the FieldChildProps to the appropriate control.
+   */
+  children?: React.ReactElement<FieldChildProps> | null | ((props: FieldChildProps) => React.ReactNode);
+
   /**
    * The orientation of the label relative to the field component.
    * This only affects the label, and not the validationMessage or hint (which always appear below the field component).
@@ -67,35 +69,35 @@ export type FieldProps<T extends FieldComponent> = ComponentProps<Partial<FieldS
   orientation?: 'vertical' | 'horizontal';
 
   /**
-   * The `validationState` affects the color of the `validationMessage`, the `validationMessageIcon`, and for some
-   * field components, an `validationState="error"` causes the border to become red.
+   * The `validationState` affects the display of the `validationMessage` and `validationMessageIcon`.
    *
-   * @default undefined
+   * * `error` - (default) The validation message has a red error icon and red text, with `role="alert"` so it is
+   *     announced by screen readers. Additionally, the control inside the field has `aria-invalid` set, which adds a
+   *     red border to some field components (such as `Input`).
+   * * `success` - The validation message has a green checkmark icon and gray text.
+   * * `warning` - The validation message has a yellow exclamation icon and gray text.
+   * * `none` - The validation message has no icon and gray text.
+   *
+   * @default error when `validationMessage` is set; none otherwise.
    */
-  validationState?: 'error' | 'warning' | 'success';
-};
+  validationState?: 'error' | 'warning' | 'success' | 'none';
 
-/**
- * Props that are supported by Field, but not required to be supported by the component that implements field.
- */
-export type OptionalFieldComponentProps = {
   /**
-   * Whether the field label should be marked as required.
+   * Marks the Field as required. If `true`, an asterisk will be appended to the label, and `aria-required` will be set
+   * on the Field's child.
    */
   required?: boolean;
 
   /**
-   * Size of the field label.
+   * The size of the Field's label.
    *
-   * Number sizes will be ignored, but are allowed because the HTML `<input>` element has a prop `size?: number`.
+   * @default medium
    */
-  size?: 'small' | 'medium' | 'large' | number;
+  size?: 'small' | 'medium' | 'large';
 };
 
 /**
  * State used in rendering Field
  */
-export type FieldState<T extends FieldComponent> = ComponentState<Required<FieldSlots<T>>> &
-  Pick<FieldProps<T>, 'orientation' | 'validationState'> & {
-    classNames: SlotClassNames<FieldSlots<T>>;
-  };
+export type FieldState = ComponentState<Required<FieldSlots>> &
+  Required<Pick<FieldProps, 'orientation' | 'validationState'>>;

@@ -9,26 +9,6 @@ export {
 } from '@fluentui/react-alert';
 export type { AlertProps, AlertSlots, AlertState } from '@fluentui/react-alert';
 export {
-  AvatarGroup,
-  AvatarGroupItem,
-  avatarGroupClassNames,
-  avatarGroupItemClassNames,
-  renderAvatarGroup_unstable,
-  renderAvatarGroupItem_unstable,
-  useAvatarGroup_unstable,
-  useAvatarGroupItem_unstable,
-  useAvatarGroupStyles_unstable,
-  useAvatarGroupItemStyles_unstable,
-} from '@fluentui/react-avatar';
-export type {
-  AvatarGroupProps,
-  AvatarGroupSlots,
-  AvatarGroupState,
-  AvatarGroupItemProps,
-  AvatarGroupItemSlots,
-  AvatarGroupItemState,
-} from '@fluentui/react-avatar';
-export {
   Card,
   CardFooter,
   CardHeader,
@@ -92,9 +72,14 @@ export {
   optionGroupClassNames,
   useOptionGroupStyles_unstable,
   useOptionGroup_unstable,
+  ComboboxProvider,
+  useComboboxContextValues,
+  ListboxProvider,
+  useListboxContextValues,
 } from '@fluentui/react-combobox';
 export type {
   ComboboxProps,
+  ComboboxContextValue,
   ComboboxContextValues,
   ComboboxOpenChangeData,
   ComboboxOpenEvents,
@@ -106,6 +91,7 @@ export type {
   DropdownOpenEvents,
   DropdownSlots,
   DropdownState,
+  ListboxContextValue,
   ListboxContextValues,
   ListboxProps,
   ListboxSlots,
@@ -127,99 +113,13 @@ export {
 export type { SelectProps, SelectSlots, SelectState } from '@fluentui/react-select';
 
 export {
-  Toolbar,
-  ToolbarButton,
-  ToolbarDivider,
-  ToolbarToggleButton,
-  renderToolbar_unstable,
-  toolbarClassNames,
-  useToolbar_unstable,
-  useToolbarDividerStyles_unstable,
-  useToolbarStyles_unstable,
-} from '@fluentui/react-toolbar';
-
-export type {
-  ToolbarButtonProps,
-  ToolbarButtonState,
-  ToolbarContextValue,
-  ToolbarContextValues,
-  ToolbarDividerProps,
-  ToolbarDividerState,
-  ToolbarProps,
-  ToolbarSlots,
-  ToolbarState,
-  ToolbarToggleButtonProps,
-  ToolbarToggleButtonState,
-} from '@fluentui/react-toolbar';
-
-export {
-  Overflow,
-  OverflowItem,
-  useIsOverflowGroupVisible,
-  useIsOverflowItemVisible,
-  useOverflowMenu,
-  DATA_OVERFLOWING,
-  DATA_OVERFLOW_MENU,
-  DATA_OVERFLOW_ITEM,
-} from '@fluentui/react-overflow';
-
-export type { OverflowProps, OverflowItemProps } from '@fluentui/react-overflow';
-
-export {
-  Dialog,
-  dialogClassNames,
-  useDialog_unstable,
-  useDialogStyles_unstable,
-  renderDialog_unstable,
-  DialogTitle,
-  dialogTitleClassNames,
-  useDialogTitle_unstable,
-  useDialogTitleStyles_unstable,
-  renderDialogTitle_unstable,
-  DialogTrigger,
-  useDialogTrigger_unstable,
-  renderDialogTrigger_unstable,
-  DialogBody,
-  dialogBodyClassNames,
-  useDialogBody_unstable,
-  useDialogBodyStyles_unstable,
-  renderDialogBody_unstable,
-  DialogActions,
-  dialogActionsClassNames,
-  useDialogActions_unstable,
-  useDialogActionsStyles_unstable,
-  renderDialogActions_unstable,
-  DialogSurface,
-  dialogSurfaceClassNames,
-  useDialogSurface_unstable,
-  useDialogSurfaceStyles_unstable,
-  renderDialogSurface_unstable,
-} from '@fluentui/react-dialog';
-
-export type {
-  DialogProps,
-  DialogOpenChangeData,
-  DialogOpenChangeEvent,
-  DialogSlots,
-  DialogState,
-  DialogTriggerProps,
-  DialogTriggerChildProps,
-  DialogTriggerState,
-  DialogTriggerAction,
-  DialogActionsProps,
-  DialogActionsSlots,
-  DialogActionsState,
-  DialogActionsPosition,
-  DialogBodyProps,
-  DialogBodySlots,
-  DialogBodyState,
-  DialogTitleProps,
-  DialogTitleSlots,
-  DialogTitleState,
-  DialogSurfaceProps,
-  DialogSurfaceSlots,
-  DialogSurfaceState,
-} from '@fluentui/react-dialog';
+  InfoButton,
+  infoButtonClassNames,
+  useInfoButton_unstable,
+  useInfoButtonStyles_unstable,
+  renderInfoButton_unstable,
+} from '@fluentui/react-infobutton';
+export type { InfoButtonProps, InfoButtonSlots, InfoButtonState } from '@fluentui/react-infobutton';
 
 export {
   TableCell,
@@ -265,15 +165,59 @@ export {
   useTableSelectionCell_unstable,
   renderTableSelectionCell_unstable,
   tableSelectionCellClassNames,
-  TablePrimaryCell,
-  useTablePrimaryCellStyles_unstable,
-  useTablePrimaryCell_unstable,
-  renderTablePrimaryCell_unstable,
   TableCellActions,
   useTableCellActionsStyles_unstable,
   useTableCellActions_unstable,
   renderTableCellActions_unstable,
+  tableCellActionsClassNames,
+  TableCellLayout,
+  useTableCellLayout_unstable,
+  useTableCellLayoutStyles_unstable,
+  renderTableCellLayout_unstable,
+  tableCellLayoutClassNames,
+  useTableFeatures,
+  useTableSelection,
+  useTableSort,
+  createTableColumn,
+  DataGridCell,
+  dataGridCellClassNames,
+  useDataGridCellStyles_unstable,
+  useDataGridCell_unstable,
+  renderDataGridCell_unstable,
+  DataGridRow,
+  dataGridRowClassNames,
+  useDataGridRowStyles_unstable,
+  useDataGridRow_unstable,
+  renderDataGridRow_unstable,
+  DataGridBody,
+  dataGridBodyClassNames,
+  useDataGridBodyStyles_unstable,
+  useDataGridBody_unstable,
+  renderDataGridBody_unstable,
+  DataGrid,
+  dataGridClassNames,
+  useDataGridStyles_unstable,
+  useDataGrid_unstable,
+  renderDataGrid_unstable,
+  DataGridHeader,
+  dataGridHeaderClassNames,
+  useDataGridHeaderStyles_unstable,
+  useDataGridHeader_unstable,
+  renderDataGridHeader_unstable,
+  DataGridHeaderCell,
+  dataGridHeaderCellClassNames,
+  useDataGridHeaderCellStyles_unstable,
+  useDataGridHeaderCell_unstable,
+  renderDataGridHeaderCell_unstable,
+  DataGridSelectionCell,
+  useDataGridSelectionCellStyles_unstable,
+  useDataGridSelectionCell_unstable,
+  renderDataGridSelectionCell_unstable,
+  dataGridSelectionCellClassNames,
+  TableRowIdContextProvider,
+  useTableRowIdContext,
 } from '@fluentui/react-table';
+
 export type {
   SortDirection,
   TableHeaderCellProps,
@@ -302,7 +246,123 @@ export type {
   TableCellActionsProps,
   TableCellActionsState,
   TableCellActionsSlots,
-  TablePrimaryCellProps,
-  TablePrimaryCellSlots,
-  TablePrimaryCellState,
+  TableCellLayoutProps,
+  TableCellLayoutState,
+  TableCellLayoutSlots,
+  UseTableFeaturesOptions,
+  TableFeaturesState,
+  TableSelectionState,
+  TableSortState,
+  TableFeaturePlugin,
+  TableRowData,
+  TableRowId,
+  TableColumnDefinition,
+  TableColumnId,
+  CreateTableColumnOptions,
+  DataGridHeaderCellProps,
+  DataGridHeaderCellSlots,
+  DataGridHeaderCellState,
+  DataGridHeaderProps,
+  DataGridHeaderSlots,
+  DataGridHeaderState,
+  DataGridProps,
+  DataGridSlots,
+  DataGridState,
+  DataGridContextValue,
+  DataGridContextValues,
+  DataGridBodyProps,
+  DataGridBodyState,
+  DataGridBodySlots,
+  DataGridRowProps,
+  DataGridRowState,
+  DataGridRowSlots,
+  DataGridCellProps,
+  DataGridCellState,
+  DataGridCellSlots,
+  DataGridSelectionCellProps,
+  DataGridSelectionCellState,
+  DataGridSelectionCellSlots,
 } from '@fluentui/react-table';
+
+// eslint-disable-next-line deprecation/deprecation
+export { CheckboxField_unstable as CheckboxField, checkboxFieldClassNames } from '@fluentui/react-checkbox';
+// eslint-disable-next-line deprecation/deprecation
+export type { CheckboxFieldProps_unstable as CheckboxFieldProps } from '@fluentui/react-checkbox';
+
+// eslint-disable-next-line deprecation/deprecation
+export { ComboboxField_unstable as ComboboxField, comboboxFieldClassNames } from '@fluentui/react-combobox';
+// eslint-disable-next-line deprecation/deprecation
+export type { ComboboxFieldProps_unstable as ComboboxFieldProps } from '@fluentui/react-combobox';
+
+// eslint-disable-next-line deprecation/deprecation
+export { InputField_unstable as InputField, inputFieldClassNames } from '@fluentui/react-input';
+// eslint-disable-next-line deprecation/deprecation
+export type { InputFieldProps_unstable as InputFieldProps } from '@fluentui/react-input';
+
+// eslint-disable-next-line deprecation/deprecation
+export { ProgressField_unstable as ProgressField, progressFieldClassNames } from '@fluentui/react-progress';
+// eslint-disable-next-line deprecation/deprecation
+export type { ProgressFieldProps_unstable as ProgressFieldProps } from '@fluentui/react-progress';
+
+// eslint-disable-next-line deprecation/deprecation
+export { RadioGroupField_unstable as RadioGroupField, radioGroupFieldClassNames } from '@fluentui/react-radio';
+// eslint-disable-next-line deprecation/deprecation
+export type { RadioGroupFieldProps_unstable as RadioGroupFieldProps } from '@fluentui/react-radio';
+
+// eslint-disable-next-line deprecation/deprecation
+export { SelectField_unstable as SelectField, selectFieldClassNames } from '@fluentui/react-select';
+// eslint-disable-next-line deprecation/deprecation
+export type { SelectFieldProps_unstable as SelectFieldProps } from '@fluentui/react-select';
+
+// eslint-disable-next-line deprecation/deprecation
+export { SliderField_unstable as SliderField, sliderFieldClassNames } from '@fluentui/react-slider';
+// eslint-disable-next-line deprecation/deprecation
+export type { SliderFieldProps_unstable as SliderFieldProps } from '@fluentui/react-slider';
+
+// eslint-disable-next-line deprecation/deprecation
+export { SpinButtonField_unstable as SpinButtonField, spinButtonFieldClassNames } from '@fluentui/react-spinbutton';
+// eslint-disable-next-line deprecation/deprecation
+export type { SpinButtonFieldProps_unstable as SpinButtonFieldProps } from '@fluentui/react-spinbutton';
+
+// eslint-disable-next-line deprecation/deprecation
+export { SwitchField_unstable as SwitchField, switchFieldClassNames } from '@fluentui/react-switch';
+// eslint-disable-next-line deprecation/deprecation
+export type { SwitchFieldProps_unstable as SwitchFieldProps } from '@fluentui/react-switch';
+
+// eslint-disable-next-line deprecation/deprecation
+export { TextareaField_unstable as TextareaField, textareaFieldClassNames } from '@fluentui/react-textarea';
+// eslint-disable-next-line deprecation/deprecation
+export type { TextareaFieldProps_unstable as TextareaFieldProps } from '@fluentui/react-textarea';
+
+export {
+  Field,
+  fieldClassNames,
+  renderField_unstable,
+  useFieldStyles_unstable,
+  useField_unstable,
+} from '@fluentui/react-field';
+export type { FieldProps, FieldSlots, FieldState } from '@fluentui/react-field';
+
+export {
+  ProgressBar,
+  progressBarClassNames,
+  renderProgressBar_unstable,
+  useProgressBarStyles_unstable,
+  useProgressBar_unstable,
+} from '@fluentui/react-progress';
+export type { ProgressBarProps, ProgressBarState, ProgressBarSlots } from '@fluentui/react-progress';
+
+export {
+  Virtualizer,
+  virtualizerClassNames,
+  useVirtualizer_unstable,
+  renderVirtualizer_unstable,
+  useVirtualizerStyles_unstable,
+  useIntersectionObserver,
+} from '@fluentui/react-virtualizer';
+export type {
+  VirtualizerProps,
+  VirtualizerState,
+  VirtualizerSlots,
+  VirtualizerChildRenderFunction,
+} from '@fluentui/react-virtualizer';

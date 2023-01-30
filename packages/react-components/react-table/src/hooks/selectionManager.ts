@@ -1,14 +1,15 @@
+import * as React from 'react';
 import { SelectionMode } from './types';
 
-type OnSelectionChangeCallback = (selectedItems: Set<SelectionItemId>) => void;
+type OnSelectionChangeCallback = (e: React.SyntheticEvent, selectedItems: Set<SelectionItemId>) => void;
 
 export interface SelectionManager {
-  toggleItem(id: SelectionItemId): void;
-  selectItem(id: SelectionItemId): void;
-  deselectItem(id: SelectionItemId): void;
-  clearItems(): void;
-  isSelected(id: SelectionItemId): boolean;
-  toggleAllItems(itemIds: SelectionItemId[]): void;
+  toggleItem(e: React.SyntheticEvent, id: SelectionItemId, selectedItems: Set<SelectionItemId>): void;
+  selectItem(e: React.SyntheticEvent, id: SelectionItemId, selectedItems: Set<SelectionItemId>): void;
+  deselectItem(e: React.SyntheticEvent, id: SelectionItemId, selectedItems: Set<SelectionItemId>): void;
+  clearItems(e: React.SyntheticEvent): void;
+  isSelected(id: SelectionItemId, selectedItems: Set<SelectionItemId>): boolean;
+  toggleAllItems(e: React.SyntheticEvent, itemIds: SelectionItemId[], selectedItems: Set<SelectionItemId>): void;
 }
 
 export type SelectionItemId = string | number;
@@ -23,8 +24,7 @@ export function createSelectionManager(
 }
 
 function createMultipleSelectionManager(onSelectionChange: OnSelectionChangeCallback): SelectionManager {
-  const selectedItems = new Set<SelectionItemId>();
-  const toggleAllItems = (itemIds: SelectionItemId[]) => {
+  const toggleAllItems: SelectionManager['toggleAllItems'] = (e, itemIds, selectedItems) => {
     const allItemsSelected = itemIds.every(itemId => selectedItems.has(itemId));
 
     if (allItemsSelected) {
@@ -33,35 +33,34 @@ function createMultipleSelectionManager(onSelectionChange: OnSelectionChangeCall
       itemIds.forEach(itemId => selectedItems.add(itemId));
     }
 
-    onSelectionChange(new Set(selectedItems));
+    onSelectionChange(e, new Set(selectedItems));
   };
 
-  const toggleItem = (itemId: SelectionItemId) => {
+  const toggleItem: SelectionManager['toggleItem'] = (e, itemId, selectedItems) => {
     if (selectedItems.has(itemId)) {
       selectedItems.delete(itemId);
     } else {
       selectedItems.add(itemId);
     }
 
-    onSelectionChange(new Set(selectedItems));
+    onSelectionChange(e, new Set(selectedItems));
   };
 
-  const selectItem = (itemId: SelectionItemId) => {
+  const selectItem: SelectionManager['selectItem'] = (e, itemId, selectedItems) => {
     selectedItems.add(itemId);
-    onSelectionChange(new Set(selectedItems));
+    onSelectionChange(e, new Set(selectedItems));
   };
 
-  const deselectItem = (itemId: SelectionItemId) => {
+  const deselectItem: SelectionManager['deselectItem'] = (e, itemId, selectedItems) => {
     selectedItems.delete(itemId);
-    onSelectionChange(new Set(selectedItems));
+    onSelectionChange(e, new Set(selectedItems));
   };
 
-  const clearItems = () => {
-    selectedItems.clear();
-    onSelectionChange(new Set(selectedItems));
+  const clearItems: SelectionManager['clearItems'] = e => {
+    onSelectionChange(e, new Set());
   };
 
-  const isSelected = (itemId: SelectionItemId) => {
+  const isSelected = (itemId: SelectionItemId, selectedItems: Set<SelectionItemId>) => {
     return selectedItems.has(itemId);
   };
 
@@ -76,24 +75,20 @@ function createMultipleSelectionManager(onSelectionChange: OnSelectionChangeCall
 }
 
 function createSingleSelectionManager(onSelectionChange: OnSelectionChangeCallback): SelectionManager {
-  let selectedItem: SelectionItemId | undefined = undefined;
-  const toggleItem = (itemId: SelectionItemId) => {
-    selectedItem = itemId;
-    onSelectionChange(new Set([selectedItem]));
+  const toggleItem: SelectionManager['toggleItem'] = (e, itemId) => {
+    onSelectionChange(e, new Set([itemId]));
   };
 
-  const clearItems = () => {
-    selectedItem = undefined;
-    onSelectionChange(new Set<SelectionItemId>());
+  const clearItems: SelectionManager['clearItems'] = e => {
+    onSelectionChange(e, new Set<SelectionItemId>());
   };
 
-  const isSelected = (itemId: SelectionItemId) => {
-    return selectedItem === itemId;
+  const isSelected = (itemId: SelectionItemId, selectedItems: Set<SelectionItemId>) => {
+    return selectedItems.has(itemId);
   };
 
-  const selectItem = (itemId: SelectionItemId) => {
-    selectedItem = itemId;
-    onSelectionChange(new Set([selectedItem]));
+  const selectItem: SelectionManager['selectItem'] = (e, itemId) => {
+    onSelectionChange(e, new Set([itemId]));
   };
 
   return {

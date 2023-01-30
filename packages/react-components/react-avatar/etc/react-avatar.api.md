@@ -27,6 +27,15 @@ export const Avatar: ForwardRefComponent<AvatarProps>;
 // @public (undocumented)
 export const avatarClassNames: SlotClassNames<AvatarSlots>;
 
+// @internal (undocumented)
+export const AvatarContextProvider: React_2.Provider<AvatarContextValue | undefined>;
+
+// @internal (undocumented)
+export interface AvatarContextValue {
+    // (undocumented)
+    size?: AvatarSize;
+}
+
 // @public
 export const AvatarGroup: ForwardRefComponent<AvatarGroupProps>;
 
@@ -63,7 +72,7 @@ export type AvatarGroupItemSlots = {
 export type AvatarGroupItemState = ComponentState<AvatarGroupItemSlots> & {
     isOverflowItem?: boolean;
     layout: AvatarGroupProps['layout'];
-    size: AvatarSizes;
+    size: AvatarSize;
 };
 
 // @public
@@ -89,16 +98,16 @@ export type AvatarGroupPopoverSlots = {
 };
 
 // @public
-export type AvatarGroupPopoverState = ComponentState<AvatarGroupPopoverSlots> & Required<Pick<AvatarGroupPopoverProps, 'indicator'>> & {
+export type AvatarGroupPopoverState = ComponentState<AvatarGroupPopoverSlots> & Required<Pick<AvatarGroupPopoverProps, 'count' | 'indicator'>> & {
     popoverOpen: boolean;
     layout: AvatarGroupProps['layout'];
-    size: AvatarSizes;
+    size: AvatarSize;
 };
 
 // @public
 export type AvatarGroupProps = ComponentProps<AvatarGroupSlots> & {
     layout?: 'spread' | 'stack' | 'pie';
-    size?: AvatarSizes;
+    size?: AvatarSize;
 };
 
 // @public (undocumented)
@@ -123,11 +132,14 @@ export type AvatarProps = Omit<ComponentProps<AvatarSlots>, 'color'> & {
     idForColor?: string | undefined;
     name?: string;
     shape?: 'circular' | 'square';
-    size?: AvatarSizes;
+    size?: AvatarSize;
 };
 
 // @public
-export type AvatarSizes = 16 | 20 | 24 | 28 | 32 | 36 | 40 | 48 | 56 | 64 | 72 | 96 | 120 | 128;
+export type AvatarSize = 16 | 20 | 24 | 28 | 32 | 36 | 40 | 48 | 56 | 64 | 72 | 96 | 120 | 128;
+
+// @public @deprecated
+export type AvatarSizes = AvatarSize;
 
 // @public (undocumented)
 export type AvatarSlots = {
@@ -141,6 +153,7 @@ export type AvatarSlots = {
 // @public
 export type AvatarState = ComponentState<AvatarSlots> & Required<Pick<AvatarProps, 'active' | 'activeAppearance' | 'shape' | 'size'>> & {
     color: NonNullable<Exclude<AvatarProps['color'], 'colorful'>>;
+    activeAriaLabelElement?: JSX.Element;
 };
 
 // @internal
@@ -149,11 +162,14 @@ export function getInitials(displayName: string | undefined | null, isRtl: boole
     firstInitialOnly?: boolean;
 }): string;
 
-// @public
-export const partitionAvatarGroupItems: <T>(options: PartitionAvatarGroupItemsOptions<T>) => {
-    inlineItems: T[];
-    overflowItems: readonly T[];
+// @public (undocumented)
+export type PartitionAvatarGroupItems<T> = {
+    inlineItems: readonly T[];
+    overflowItems?: readonly T[];
 };
+
+// @public
+export const partitionAvatarGroupItems: <T>(options: PartitionAvatarGroupItemsOptions<T>) => PartitionAvatarGroupItems<T>;
 
 // @public (undocumented)
 export type PartitionAvatarGroupItemsOptions<T> = {
@@ -176,6 +192,9 @@ export const renderAvatarGroupPopover_unstable: (state: AvatarGroupPopoverState,
 
 // @public (undocumented)
 export const useAvatar_unstable: (props: AvatarProps, ref: React_2.Ref<HTMLElement>) => AvatarState;
+
+// @internal (undocumented)
+export const useAvatarContext: () => AvatarContextValue;
 
 // @public
 export const useAvatarGroup_unstable: (props: AvatarGroupProps, ref: React_2.Ref<HTMLElement>) => AvatarGroupState;

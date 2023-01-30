@@ -5,11 +5,11 @@ import * as platformPickerStyles from '@fluentui/react-docsite-components/lib/co
 import { SiteDefinition } from './SiteDefinition/index';
 import { HomePage } from './pages/HomePage/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
-import { androidLogo, appleLogo, webLogo, macLogo, windowsLogo, crossPlatformLogo } from './utilities/index';
+import { androidLogo, appleLogo, webLogo, macLogo, windowsLogo, crossPlatformLogo, cdnUrl } from './utilities/index';
 
 // TODO: handle redirects
 
-initializeFileTypeIcons('https://static2.sharepointonline.com/files/fabric/assets/item-types/');
+initializeFileTypeIcons(cdnUrl + '/assets/item-types/');
 
 setRTL(false);
 
@@ -36,7 +36,7 @@ registerIcons({
   },
 });
 
-const skipToMain = document.querySelector('[href="#mainContent"]') as HTMLAnchorElement;
+const skipToMain = document.getElementById('uhfSkipToMain') as HTMLAnchorElement;
 if (skipToMain) {
   // This link points to #mainContent by default, which would be interpreted as a route in our app.
   // Handle focusing the main content manually instead.

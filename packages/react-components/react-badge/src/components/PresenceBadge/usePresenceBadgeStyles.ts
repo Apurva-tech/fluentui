@@ -10,7 +10,7 @@ export const presenceBadgeClassNames: SlotClassNames<BadgeSlots> = {
 };
 
 const getIsBusy = (status: PresenceBadgeStatus): boolean => {
-  if (status === 'busy' || status === 'do-not-disturb' || status === 'unknown') {
+  if (status === 'busy' || status === 'do-not-disturb' || status === 'unknown' || status === 'blocked') {
     return true;
   }
 
@@ -28,7 +28,7 @@ const useStyles = makeStyles({
     '& span': {
       display: 'flex',
     },
-    ...shorthands.borderRadius('50%'),
+    ...shorthands.borderRadius(tokens.borderRadiusCircular),
     backgroundColor: tokens.colorNeutralBackground1,
   },
   statusBusy: {

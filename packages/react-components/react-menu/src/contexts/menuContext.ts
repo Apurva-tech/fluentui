@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { createContext, useContextSelector } from '@fluentui/react-context-selector';
 import type { ContextSelector, Context } from '@fluentui/react-context-selector';
-import type { MenuListProps } from '../components/index';
 import type { MenuState } from '../components/Menu/index';
 
 export const MenuContext: Context<MenuContextValue> = createContext<MenuContextValue | undefined>(
@@ -13,7 +12,6 @@ const menuContextDefaultValue: MenuContextValue = {
   setOpen: () => false,
   checkedValues: {},
   onCheckedValueChange: () => null,
-  defaultCheckedValues: {},
   isSubmenu: false,
   triggerRef: ({ current: null } as unknown) as React.MutableRefObject<HTMLElement>,
   menuPopoverRef: ({ current: null } as unknown) as React.MutableRefObject<HTMLElement>,
@@ -22,6 +20,8 @@ const menuContextDefaultValue: MenuContextValue = {
   openOnHover: false,
   hasIcons: false,
   hasCheckmarks: false,
+  inline: false,
+  persistOnItemClick: false,
 };
 
 /**
@@ -29,24 +29,31 @@ const menuContextDefaultValue: MenuContextValue = {
  *
  * Extends and drills down MenuList props to simplify API
  */
-export type MenuContextValue = MenuListProps &
-  Pick<
-    MenuState,
-    | 'openOnHover'
-    | 'openOnContext'
-    | 'triggerRef'
-    | 'menuPopoverRef'
-    | 'setOpen'
-    | 'isSubmenu'
-    | 'triggerId'
-    | 'hasIcons'
-    | 'hasCheckmarks'
-    | 'persistOnItemClick'
-    | 'inline'
-  > & {
-    open: boolean;
-    triggerId: string;
-  };
+export type MenuContextValue = Pick<
+  MenuState,
+  | 'openOnHover'
+  | 'openOnContext'
+  | 'triggerRef'
+  | 'menuPopoverRef'
+  | 'setOpen'
+  | 'isSubmenu'
+  | 'triggerId'
+  | 'hasIcons'
+  | 'hasCheckmarks'
+  | 'persistOnItemClick'
+  | 'inline'
+  | 'checkedValues'
+  | 'onCheckedValueChange'
+> & {
+  open: boolean;
+  triggerId: string;
+  /**
+   * Default values to be checked on mount
+   * @deprecated this property is not used internally anymore,
+   * the signature remains just to avoid breaking changes
+   */
+  defaultCheckedValues?: Record<string, string[]>;
+};
 
 export const MenuProvider = MenuContext.Provider;
 

@@ -1,87 +1,16 @@
 import * as React from 'react';
-import type { FieldComponent, FieldProps, FieldSlots, FieldState, OptionalFieldComponentProps } from './Field.types';
+
 import { CheckmarkCircle12Filled, ErrorCircle12Filled, Warning12Filled } from '@fluentui/react-icons';
 import { Label } from '@fluentui/react-label';
-import { getNativeElementProps, resolveShorthand, SlotClassNames, useId } from '@fluentui/react-utilities';
+import { getNativeElementProps, resolveShorthand, useId } from '@fluentui/react-utilities';
+import type { FieldChildProps, FieldProps, FieldState } from './Field.types';
 
 const validationMessageIcons = {
   error: <ErrorCircle12Filled />,
   warning: <Warning12Filled />,
   success: <CheckmarkCircle12Filled />,
+  none: undefined,
 } as const;
-
-/**
- * Merge two possibly-undefined IDs for aria-describedby. If both IDs are defined, combines
- * them into a string separated by a space. Otherwise, returns just the defined ID (if any).
- */
-const mergeAriaDescribedBy = (a?: string, b?: string) => (a && b ? `${a} ${b}` : a || b);
-
-/**
- * Partition the props used by the Field itself, from the props that are passed to the underlying field component.
- */
-export const getPartitionedFieldProps = <Props extends FieldProps<FieldComponent>>(props: Props) => {
-  const {
-    className,
-    control,
-    hint,
-    label,
-    orientation,
-    root,
-    style,
-    validationMessage,
-    validationMessageIcon,
-    validationState,
-    ...restOfProps
-  } = props;
-
-  const fieldProps = {
-    className,
-    control,
-    hint,
-    label,
-    orientation,
-    root,
-    style,
-    validationMessage,
-    validationMessageIcon,
-    validationState,
-  };
-
-  return [fieldProps, restOfProps] as const;
-};
-
-export type UseFieldParams<T extends FieldComponent> = {
-  /**
-   * Props passed to this Field
-   */
-  props: FieldProps<T> & OptionalFieldComponentProps;
-
-  /**
-   * Ref to be passed to the control slot (primary slot)
-   */
-  ref: React.Ref<HTMLElement>;
-
-  /**
-   * The underlying input component that this field is wrapping.
-   */
-  component: T;
-
-  /**
-   * Class names for this component, created by `getFieldClassNames`.
-   */
-  classNames: SlotClassNames<FieldSlots<T>>;
-
-  /**
-   * How the label be connected to the control.
-   * * htmlFor - Set the Label's htmlFor prop to the component's ID (and generate an ID if not provided).
-   *   This is the preferred method for components that use the underlying <input> tag.
-   * * aria-labelledby - Set the component's aria-labelledby prop to the Label's ID. Use this for components
-   *   that are not directly <input> elements (such as RadioGroup).
-   *
-   * @default htmlFor
-   */
-  labelConnection?: 'htmlFor' | 'aria-labelledby';
-};
 
 /**
  * Create the state required to render Field.
@@ -89,32 +18,35 @@ export type UseFieldParams<T extends FieldComponent> = {
  * The returned state can be modified with hooks such as useFieldStyles_unstable,
  * before being passed to renderField_unstable.
  *
- * @param params - Configuration parameters for this Field
+ * @param props - Props passed to this field
+ * @param ref - Ref to the root
  */
-export const useField_unstable = <T extends FieldComponent>(params: UseFieldParams<T>): FieldState<T> => {
-  const [props, controlProps] = getPartitionedFieldProps(params.props);
+export const useField_unstable = (props: FieldProps, ref: React.Ref<HTMLDivElement>): FieldState => {
+  const {
+    children,
+    orientation = 'vertical',
+    required,
+    validationState = props.validationMessage ? 'error' : 'none',
+    size,
+  } = props;
 
   const baseId = useId('field-');
 
-  const { orientation = 'vertical', validationState } = props;
-
-  const root = resolveShorthand(props.root, {
-    required: true,
-    defaultProps: getNativeElementProps('div', props),
-  });
+  const root = getNativeElementProps('div', { ...props, ref }, /*excludedPropNames:*/ ['children']);
 
   const label = resolveShorthand(props.label, {
     defaultProps: {
       id: baseId + '__label',
-      required: controlProps.required,
-      size: typeof controlProps.size === 'string' ? controlProps.size : undefined,
-      // htmlFor is set below
+      required,
+      size,
+      // htmlFor is handled below
     },
   });
 
   const validationMessage = resolveShorthand(props.validationMessage, {
     defaultProps: {
       id: baseId + '__validationMessage',
+      role: validationState === 'error' ? 'alert' : undefined,
     },
   });
 
@@ -124,54 +56,63 @@ export const useField_unstable = <T extends FieldComponent>(params: UseFieldPara
     },
   });
 
+  const defaultIcon = validationMessageIcons[validationState];
   const validationMessageIcon = resolveShorthand(props.validationMessageIcon, {
-    required: !!validationState,
+    required: !!defaultIcon,
     defaultProps: {
-      children: validationState ? validationMessageIcons[validationState] : undefined,
+      children: defaultIcon,
     },
   });
 
-  const { labelConnection = 'htmlFor' } = params;
-  const hasError = validationState === 'error';
+  const controlProps: FieldChildProps = React.isValidElement(children) ? { ...children.props } : {};
 
-  const control = resolveShorthand(props.control, {
-    required: true,
-    defaultProps: {
-      ref: params.ref,
-      // Add a default ID only if required for label's htmlFor prop
-      id: label && labelConnection === 'htmlFor' ? baseId + '__control' : undefined,
-      // Add aria-labelledby only if not using the label's htmlFor
-      'aria-labelledby': labelConnection !== 'htmlFor' ? label?.id : undefined,
-      'aria-describedby': hasError ? hint?.id : mergeAriaDescribedBy(validationMessage?.id, hint?.id),
-      'aria-errormessage': hasError ? validationMessage?.id : undefined,
-      'aria-invalid': hasError ? true : undefined,
-      ...controlProps,
-    },
-  });
+  if (label) {
+    controlProps['aria-labelledby'] ??= label.id;
 
-  if (labelConnection === 'htmlFor' && label && !label.htmlFor) {
-    label.htmlFor = control.id;
+    if (!label.htmlFor) {
+      // Assign the child a generated ID if doesn't already have an ID
+      controlProps.id ??= baseId + '__control';
+      label.htmlFor = controlProps.id;
+    }
   }
 
-  const state: FieldState<FieldComponent> = {
+  if (validationMessage || hint) {
+    // The control is described by the validation message, or hint, or both
+    // We also preserve and append any aria-describedby supplied by the user
+    // For reference: https://github.com/microsoft/fluentui/pull/25580#discussion_r1017259933
+    controlProps['aria-describedby'] = [validationMessage?.id, hint?.id, controlProps['aria-describedby']]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  if (validationState === 'error') {
+    controlProps['aria-invalid'] ??= true;
+  }
+
+  if (required) {
+    controlProps['aria-required'] ??= true;
+  }
+
+  if (React.isValidElement(children)) {
+    root.children = React.cloneElement(children, controlProps);
+  } else if (typeof children === 'function') {
+    root.children = children(controlProps);
+  }
+
+  return {
     orientation,
     validationState,
-    classNames: params.classNames,
     components: {
       root: 'div',
-      control: params.component,
       label: Label,
-      validationMessage: 'span',
+      validationMessage: 'div',
       validationMessageIcon: 'span',
-      hint: 'span',
+      hint: 'div',
     },
     root,
-    control,
     label,
     validationMessageIcon,
     validationMessage,
     hint,
   };
-
-  return state as FieldState<T>;
 };
