@@ -1,5 +1,5 @@
 import { createTheme, Theme } from '@fluentui/react';
-import { CommonSemanticColors, DarkSemanticColors } from './AzureColors';
+import { BaseColors, CommonSemanticColors, DarkSemanticColors } from './AzureColors';
 import { IExtendedSemanticColors } from './IExtendedSemanticColors';
 import { FontSizes } from './AzureType';
 import * as StyleConstants from './Constants';
@@ -21,11 +21,19 @@ const darkExtendedSemanticColors: Partial<IExtendedSemanticColors> = {
   buttonBackgroundDisabled: DarkSemanticColors.disabledButton.background,
   buttonBackgroundHovered: DarkSemanticColors.secondaryButton.hover.background,
   buttonBackgroundPressed: DarkSemanticColors.secondaryButton.pressed.background,
+  ButtonBackgroundTag: DarkSemanticColors.tagButton.rest.background,
+  ButtonBackgroundTagHovered: DarkSemanticColors.tagButton.hover.background,
+  ButtonBackgroundTagPressed: DarkSemanticColors.tagButton.pressed.background,
+  ButtonBackgroundTagText: DarkSemanticColors.tagButton.rest.text,
+  ButtonBackgroundTagTextHovered: DarkSemanticColors.tagButton.hover.text,
   ButtonBorderDanger: DarkSemanticColors.dangerButton.rest.border,
   ButtonBorderDangerHovered: DarkSemanticColors.dangerButton.hover.border,
   ButtonBorderDangerPressed: DarkSemanticColors.dangerButton.pressed.border,
   ButtonBorderDisabled: DarkSemanticColors.disabledButton.background,
   ButtonBorderFocus: DarkSemanticColors.secondaryButton.focus.border,
+  ButtonBorderTag: DarkSemanticColors.tagButton.rest.border,
+  ButtonBorderTagHovered: DarkSemanticColors.tagButton.hover.border,
+  ButtonBorderTagPressed: DarkSemanticColors.tagButton.pressed.border,
   buttonText: DarkSemanticColors.secondaryButton.rest.text,
   buttonTextChecked: DarkSemanticColors.secondaryButton.pressed.text,
   buttonTextCheckedHovered: DarkSemanticColors.secondaryButton.hover.border,
@@ -52,6 +60,9 @@ const darkExtendedSemanticColors: Partial<IExtendedSemanticColors> = {
   datePickerSelectionText: DarkSemanticColors.datePicker.rest.text,
   disabledBackground: CommonSemanticColors.backgrounds.disabled,
   disabledBodyText: DarkSemanticColors.text.disabled,
+  dropdownBackground: DarkSemanticColors.dropDown.background.rest,
+  dropdownItemHover: DarkSemanticColors.dropDown.text.hovered,
+  dropdownTextHovered: DarkSemanticColors.dropDown.text.hovered,
   errorBackground: DarkSemanticColors.controlOutlines.error,
   errorText: DarkSemanticColors.text.error,
   focusBorder: DarkSemanticColors.controlOutlines.accent,
@@ -100,7 +111,7 @@ const darkExtendedSemanticColors: Partial<IExtendedSemanticColors> = {
   rowBorder: DarkSemanticColors.detailsRow.border,
   rowFocus: DarkSemanticColors.detailsRow.focus,
   tabHover: DarkSemanticColors.tabs.hover,
-  variantBorder: CommonSemanticColors.dividers.lineSeparator,
+  variantBorder: BaseColors.TRANSPARENT,
 
   // extended
   commandBarButtonAfterColor: DarkSemanticColors.commandBar.button.focus.borderColor,
@@ -137,7 +148,8 @@ const darkExtendedSemanticColors: Partial<IExtendedSemanticColors> = {
   statusInformationIcon: DarkSemanticColors.statusBar.icon.default,
   statusSuccessBackground: DarkSemanticColors.statusBar.background.okay,
   statusSuccessBorder: DarkSemanticColors.statusBar.border.okay,
-  statusLink: DarkSemanticColors.statusBar.link,
+  statusLink: DarkSemanticColors.statusBar.link.rest,
+  statusLinkHover: DarkSemanticColors.statusBar.link.hover,
   statusSuccessText: DarkSemanticColors.text.body,
   statusSuccessIcon: DarkSemanticColors.statusBar.icon.okay,
   statusWarningBackground: DarkSemanticColors.statusBar.background.warning,

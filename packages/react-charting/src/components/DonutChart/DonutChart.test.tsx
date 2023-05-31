@@ -32,11 +32,12 @@ function sharedAfterEach() {
 const points: IChartDataPoint[] = [
   { legend: 'first', data: 20000, color: '#E5E5E5', xAxisCalloutData: '2020/04/30' },
   { legend: 'second', data: 39000, color: '#0078D4', xAxisCalloutData: '2020/04/20' },
+  { legend: 'third', data: 45000, color: '#DADADA', xAxisCalloutData: '2020/04/25' },
 ];
 
 const chartTitle = 'Stacked Bar chart example';
 
-const chartPoints: IChartProps = {
+export const chartPoints: IChartProps = {
   chartTitle: chartTitle,
   chartData: points,
 };
@@ -72,14 +73,14 @@ describe('DonutChart snapShot testing', () => {
     expect(tree).toMatchSnapshot();
   });
 
-  it('Should render arc labels in percentage format', () => {
-    const component = renderer.create(<DonutChart data={chartPoints} showLabelsInPercent={true} />);
+  it('Should render arc labels', () => {
+    const component = renderer.create(<DonutChart data={chartPoints} hideLabels={false} />);
     const tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
 
-  it('Should not render arc labels', () => {
-    const component = renderer.create(<DonutChart data={chartPoints} hideLabels={true} />);
+  it('Should render arc labels in percentage format', () => {
+    const component = renderer.create(<DonutChart data={chartPoints} hideLabels={false} showLabelsInPercent={true} />);
     const tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });

@@ -1,8 +1,8 @@
-const fs = require('fs-extra');
 const path = require('path');
 
 const { findRepoDeps } = require('@fluentui/scripts-monorepo');
 const { findConfig, merge } = require('@fluentui/scripts-utils');
+const fs = require('fs-extra');
 
 const packageJsonPath = findConfig('package.json') ?? '';
 const packageRoot = path.dirname(packageJsonPath);
@@ -17,6 +17,11 @@ const jestAliases = () => {
   // eslint-disable-next-line no-shadow
   for (const { packageJson } of packageDeps) {
     const { name, main } = packageJson;
+    // jest 28 supports exports
+    if (packageJson.exports) {
+      continue;
+    }
+
     if (main && main.includes('lib-commonjs')) {
       // Map package root and lib imports to the commonjs version
       const mainImportPath = `${name}/${main.replace('.js', '')}`;
@@ -66,11 +71,16 @@ const createConfig = (customConfig = {}) => {
 
     globals: {
       'ts-jest': {
-        diagnostics: false,
+        /** https://kulshekhar.github.io/ts-jest/docs/28.0/getting-started/options/isolatedModules */
+        isolatedModules: true,
       },
     },
-
-    testURL: 'http://localhost',
+    testEnvironmentOptions: {
+      url: 'http://localhost',
+    },
+    testEnvironment: 'jsdom',
+    restoreMocks: true,
+    clearMocks: true,
 
     watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
   };

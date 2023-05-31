@@ -8,7 +8,9 @@ import {
   elementContains,
   getRTLSafeKeyCode,
   classNamesFunction,
+  css,
   memoizeFunction,
+  warnMutuallyExclusive,
 } from '../../Utilities';
 import {
   CheckboxVisibility,
@@ -57,6 +59,7 @@ import type { IGroupedList, IGroupDividerProps, IGroupRenderProps, IGroup } from
 import type { IListProps } from '../../List';
 
 const getClassNames = classNamesFunction<IDetailsListStyleProps, IDetailsListStyles>();
+const COMPONENT_NAME = 'DetailsList';
 
 export interface IDetailsListState {
   focusedItemIndex: number;
@@ -77,6 +80,9 @@ const MIN_COLUMN_WIDTH = 100; // this is the global min width
 
 const DEFAULT_RENDERED_WINDOWS_AHEAD = 2;
 const DEFAULT_RENDERED_WINDOWS_BEHIND = 2;
+
+const rowFocusZoneAddTabIndexProps = { tabIndex: 0 };
+const rowFocusZoneNoTabIndexProps = {};
 
 type IDetailsListInnerProps = Omit<IDetailsListProps, 'selection'> &
   IDetailsListState & {
@@ -487,10 +493,11 @@ const DetailsListInner: React.ComponentType<IDetailsListInnerProps> = (
       const rowRole = role === defaultRole ? undefined : 'presentation';
 
       // add tabindex="0" to first row if no header exists, to ensure the focuszone is in the tab order
-      const rowFocusZoneProps = isHeaderVisible || index > 0 ? {} : { tabIndex: 0 };
+      const rowFocusZoneProps =
+        isHeaderVisible || index > 0 ? rowFocusZoneNoTabIndexProps : rowFocusZoneAddTabIndexProps;
 
       const rowProps: IDetailsRowProps = {
-        item: item,
+        item,
         itemIndex: index,
         flatIndexOffset: (isHeaderVisible ? 2 : 1) + numOfGroupHeadersBeforeItem,
         compact,
@@ -593,7 +600,10 @@ const DetailsListInner: React.ComponentType<IDetailsListInnerProps> = (
   const focusZoneInnerProps: IFocusZoneProps = {
     ...focusZoneProps,
     componentRef: focusZoneProps && focusZoneProps.componentRef ? focusZoneProps.componentRef : focusZoneRef,
-    className: classNames.focusZone,
+    className:
+      focusZoneProps && focusZoneProps.className
+        ? css(classNames.focusZone, focusZoneProps.className)
+        : classNames.focusZone,
     direction: focusZoneProps ? focusZoneProps.direction : FocusZoneDirection.vertical,
     shouldEnterInnerZone:
       focusZoneProps && focusZoneProps.shouldEnterInnerZone ? focusZoneProps.shouldEnterInnerZone : isRightArrow,
@@ -698,27 +708,27 @@ const DetailsListInner: React.ComponentType<IDetailsListInnerProps> = (
             onRenderDetailsHeader(
               {
                 componentRef: headerRef,
-                selectionMode: selectionMode,
+                selectionMode,
                 layoutMode: layoutMode!,
-                selection: selection,
+                selection,
                 columns: adjustedColumns,
                 onColumnClick: onColumnHeaderClick,
                 onColumnContextMenu: onColumnHeaderContextMenu,
-                onColumnResized: onColumnResized,
-                onColumnIsSizingChanged: onColumnIsSizingChanged,
-                onColumnAutoResized: onColumnAutoResized,
-                groupNestingDepth: groupNestingDepth,
+                onColumnResized,
+                onColumnIsSizingChanged,
+                onColumnAutoResized,
+                groupNestingDepth,
                 isAllCollapsed: isCollapsed,
                 onToggleCollapseAll: onToggleCollapse,
                 ariaLabel: ariaLabelForListHeader,
-                ariaLabelForSelectAllCheckbox: ariaLabelForSelectAllCheckbox,
-                ariaLabelForSelectionColumn: ariaLabelForSelectionColumn,
-                selectAllVisibility: selectAllVisibility,
+                ariaLabelForSelectAllCheckbox,
+                ariaLabelForSelectionColumn,
+                selectAllVisibility,
                 collapseAllVisibility: groupProps && groupProps.collapseAllVisibility,
-                viewport: viewport,
-                columnReorderProps: columnReorderProps,
-                minimumPixelsForDrag: minimumPixelsForDrag,
-                cellStyleProps: cellStyleProps,
+                viewport,
+                columnReorderProps,
+                minimumPixelsForDrag,
+                cellStyleProps,
                 checkboxVisibility,
                 indentWidth,
                 onRenderDetailsCheckbox: onRenderCheckbox,
@@ -814,6 +824,10 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
       getDerivedStateFromProps: this._getDerivedStateFromProps,
     };
 
+    warnMutuallyExclusive(COMPONENT_NAME, props, {
+      selection: 'getKey',
+    });
+
     this._selection =
       props.selection ||
       new Selection({
@@ -896,8 +910,8 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
       if (isValidTargetIndex) {
         if (columnReorderOptions.onColumnDrop) {
           const dragDropDetails: IColumnDragDropDetails = {
-            draggedIndex: draggedIndex,
-            targetIndex: targetIndex,
+            draggedIndex,
+            targetIndex,
           };
           columnReorderOptions.onColumnDrop(dragDropDetails);
           /* eslint-disable deprecation/deprecation */
@@ -1089,11 +1103,11 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
   };
 
   private _onGroupExpandStateChanged = (isSomeGroupExpanded: boolean): void => {
-    this.setState({ isSomeGroupExpanded: isSomeGroupExpanded });
+    this.setState({ isSomeGroupExpanded });
   };
 
   private _onColumnIsSizingChanged = (column: IColumn, isSizing: boolean): void => {
-    this.setState({ isSizing: isSizing });
+    this.setState({ isSizing });
   };
 
   private _getGroupNestingDepth(): number {
@@ -1189,7 +1203,7 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
 
     return {
       ...previousState,
-      adjustedColumns: adjustedColumns,
+      adjustedColumns,
       lastWidth: viewportWidth,
     };
   }
@@ -1517,7 +1531,7 @@ export function buildColumns(
           isRowHeader: false,
           columnActionsMode: columnActionsMode ?? ColumnActionsMode.clickable,
           isResizable: canResizeColumns,
-          onColumnClick: onColumnClick,
+          onColumnClick,
           isGrouped: groupedColumnKey === propName,
         });
       }

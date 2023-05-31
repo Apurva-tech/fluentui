@@ -103,6 +103,12 @@ export interface PositioningOptions {
   overflowBoundary?: Boundary | null;
 
   /**
+   * Applies a padding to the overflow bounadry, so that overflow is detected earlier before the
+   * positioned surface hits the overflow boundary.
+   */
+  overflowBoundaryPadding?: number | Partial<{ top: number; end: number; bottom: number; start: number }>;
+
+  /**
    * Position for the component. Position has higher priority than align. If position is vertical ('above' | 'below')
    * and align is also vertical ('top' | 'bottom') or if both position and align are horizontal ('before' | 'after'
    * and 'start' | 'end' respectively),
@@ -155,11 +161,35 @@ export interface PositioningOptions {
    */
   // eslint-disable-next-line @typescript-eslint/naming-convention
   unstable_disableTether?: boolean | 'all';
+
+  /**
+   * If flip fails to stop the positioned element from overflowing
+   * its boundaries, use a specified fallback positions.
+   */
+  fallbackPositions?: PositioningShorthandValue[];
+
+  /**
+   * Modifies whether popover is positioned using transform.
+   * @default true
+   */
+  useTransform?: boolean;
 }
 
 export interface PositioningProps
-  // "positionFixed" & "unstable_disableTether" are not exported as public API (yet)
-  extends Omit<PositioningOptions, 'positionFixed' | 'unstable_disableTether'> {
+  extends Pick<
+    PositioningOptions,
+    | 'align'
+    | 'flipBoundary'
+    | 'overflowBoundary'
+    | 'overflowBoundaryPadding'
+    | 'position'
+    | 'offset'
+    | 'arrowPadding'
+    | 'autoSize'
+    | 'coverTarget'
+    | 'pinned'
+    | 'useTransform'
+  > {
   /** An imperative handle to Popper methods. */
   positioningRef?: React.Ref<PositioningImperativeRef>;
 

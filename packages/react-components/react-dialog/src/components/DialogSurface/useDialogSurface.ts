@@ -6,15 +6,9 @@ import {
   useMergedRefs,
   isResolvedShorthand,
 } from '@fluentui/react-utilities';
-import type {
-  DialogSurfaceElement,
-  DialogSurfaceElementIntersection,
-  DialogSurfaceProps,
-  DialogSurfaceState,
-} from './DialogSurface.types';
+import type { DialogSurfaceElement, DialogSurfaceProps, DialogSurfaceState } from './DialogSurface.types';
 import { useDialogContext_unstable } from '../../contexts';
 import { isEscapeKeyDismiss } from '../../utils';
-import { useModalAttributes } from '@fluentui/react-tabster';
 
 /**
  * Create the state required to render DialogSurface.
@@ -31,6 +25,7 @@ export const useDialogSurface_unstable = (
 ): DialogSurfaceState => {
   const { backdrop, as } = props;
   const modalType = useDialogContext_unstable(ctx => ctx.modalType);
+  const modalAttributes = useDialogContext_unstable(ctx => ctx.modalAttributes);
   const dialogRef = useDialogContext_unstable(ctx => ctx.dialogRef);
   const open = useDialogContext_unstable(ctx => ctx.open);
   const requestOpenChange = useDialogContext_unstable(ctx => ctx.requestOpenChange);
@@ -49,7 +44,7 @@ export const useDialogSurface_unstable = (
     }
   });
 
-  const handleKeyDown = useEventCallback((event: React.KeyboardEvent<DialogSurfaceElementIntersection>) => {
+  const handleKeyDown = useEventCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
     props.onKeyDown?.(event);
 
     if (isEscapeKeyDismiss(event, modalType)) {
@@ -63,8 +58,6 @@ export const useDialogSurface_unstable = (
       event.stopPropagation();
     }
   });
-
-  const { modalAttributes } = useModalAttributes({ trapFocus: modalType !== 'non-modal' });
 
   return {
     components: {

@@ -8,8 +8,8 @@ module.exports = {
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
-      tsConfig: '<rootDir>/tsconfig.spec.json',
-      diagnostics: { warnOnly: true, exclude: ['packages/**'] },
+      tsconfig: '<rootDir>/tsconfig.spec.json',
+      isolatedModules: true,
     },
   },
   transform: {

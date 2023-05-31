@@ -1,42 +1,31 @@
-import type { ComponentProps, ComponentState, Slot } from '@fluentui/react-utilities';
-import type { ButtonContextValue } from '@fluentui/react-button';
+import type { ComponentProps, ComponentState, ExtractSlotProps, Slot } from '@fluentui/react-utilities';
 import type { TreeItemContextValue } from '../../contexts';
+import { treeItemLevelToken } from '../../utils/tokens';
+import * as React from 'react';
+
+export type TreeItemCSSProperties = React.CSSProperties & { [treeItemLevelToken]?: string | number };
+
+export type TreeItemType = 'leaf' | 'branch';
 
 export type TreeItemSlots = {
-  root: Slot<'div'>;
-  content: NonNullable<Slot<'span'>>;
-  subtree?: Slot<'span'>;
-  /**
-   * Expand icon slot,
-   * by default renders a chevron icon to indicate opening and closing
-   */
-  expandIcon?: Slot<'span'>;
-  /**
-   * Actions slot that renders on the end of tree item
-   * when the item is hovered/focused
-   */
-  actions?: Slot<'span'>;
+  root: Slot<ExtractSlotProps<Slot<'div'> & { style?: TreeItemCSSProperties }>>;
 };
 
-export type TreeItemContextValues = {
-  treeItem: TreeItemContextValue;
-  button: ButtonContextValue;
-};
+export type TreeItemContextValues = { treeItem: TreeItemContextValue };
 
 /**
  * TreeItem Props
  */
-export type TreeItemProps = ComponentProps<Partial<TreeItemSlots>>;
+export type TreeItemProps<Value = string> = ComponentProps<Partial<TreeItemSlots>> & {
+  value?: Value;
+  itemType: TreeItemType;
+};
 
 /**
  * State used in rendering TreeItem
  */
-export type TreeItemState = ComponentState<TreeItemSlots> & {
-  open: boolean;
-  isLeaf: boolean;
-  /**
-   * By design, a button included on the actions slot should be small
-   */
-  buttonSize: 'small';
-  isActionsVisible: boolean;
-};
+export type TreeItemState = ComponentState<TreeItemSlots> &
+  TreeItemContextValue & {
+    level: number;
+    itemType: TreeItemType;
+  };
